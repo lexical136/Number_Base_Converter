@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <math.h>
 
 using namespace std;
 static string convertFunc(int base, int newBase, string input);
 static string convertToNew(int newBase, long long int input);
-
+static bool inputValidator(int newBase, int base, string input);
 
 int main()
 {
@@ -14,18 +15,50 @@ int main()
 
     //var for the main number
     string input = "";
+    string command = "";
 
-    //user input
-    cin >> base;
-    cin >> newBase;
-    cin >> input;
+    while(command != "q"){
+        //user input
+        cout << "Input bases must be greater than 2 and less than or equal to 30\n";
+        cout << "Enter the base of the number you wish to convert: \n";
+        cin >> base;
+        cout << "Enter the base you wish to convert to: \n";
+        cin >> newBase;
+        cout << "Enter the number you wish to convert: \n";
+        cin >> input;
+        
+        //printing the return string
+        cout << convertFunc(base, newBase, input) << "\n";
+
+        cout << "Enter q to quit or enter any char to restart.\n";
+        cin >> command;
+    }
     
-    //printing the return string
-    cout << convertFunc(base, newBase, input);
+
+    return 1;
 }
 
-//Converts to base 10. Easy on the brain
+//checks if the users inputs are valid
+static bool inputValidator(int newBase, int base, string input){
+    if(base < 2 || newBase < 2 || base > 30 || newBase > 30){
+        cout << "Input bases must be greater than 1 and less than or equal to 30\n";
+    }
+
+    for(int i = 0; i < input.length(); i++){
+        if(input[i] - '0' >= base && input[i] - 'W' >= base){
+            cout << "The input number you entered is of a higher base then " << base << ". Because " << input[i] << " >= " << base << "\n";
+            return false;
+        }
+    }
+    return true;
+} 
+
+//Converts to base 10. EBefore converting to target base
 static string convertFunc(int base, int newBase, string input) {
+    if(inputValidator(newBase, base, input) == false){
+        return "";
+    }
+    
     //a number that gets multiplied by the base each loop. Represents the true value of a position in a number like the 2 in 120 being 2 10s. 
     //for example with 100 at base 16 the 3rd place (the 1) would have a movingBase of 256 and we have 1 of them so the total value is 256.
     long long int movingBase = 1;
@@ -54,7 +87,6 @@ static string convertFunc(int base, int newBase, string input) {
 }
 
 //Converts from base 10 to desired base
-//Method I used here https://www.wikihow.com/Convert-from-Decimal-to-Octal yes wikihow
 static string convertToNew(int newBase, long long int input) {
     //stores result
     string result = "";
@@ -67,7 +99,7 @@ static string convertToNew(int newBase, long long int input) {
     highestValidPower--;
 
     //highestValidPower shows the number of spaces the number will take. for 213 base 10 to base 20 the highest valid power would be 20 because 1.. 20.. 400. 400 is too big
-    //so we start at 2 because 20 is the second.
+    //so we start at 2 spaces because 20 is the second.
     while (highestValidPower >= 0) {
 
         //if the newBase^highestValidPower is less than in the remaining input add a '0'
